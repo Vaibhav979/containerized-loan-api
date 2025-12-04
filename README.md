@@ -134,21 +134,12 @@ Meaning the production deployment always gets the newest stable image.
 
 ### 🚀 CI/CD Pipeline (GitHub Actions)
 
-┌────────────────────────────────────────────────────────────┐
-│ GitHub Actions │
-├────────────────────────────────────────────────────────────┤
-│ 1️⃣ Checkout code │
-│ 2️⃣ Setup Python │
-│ 3️⃣ Install dependencies │
-│ 4️⃣ Run tests (pytest) │
-│ 5️⃣ Build Docker image │
-│ 6️⃣ Security Scan (Trivy) │
-│ 7️⃣ Push verified image → GHCR (main branch only) │
-└────────────────────────────────────────────────────────────┘
+├── Build → Test → Scan → Publish Image → GHCR
+└── Images deployed via docker-compose (.env)
 
-Deployment:
+The resulting image is stored at:
 
-Local environments pull images from GHCR using:
+ghcr.io/<github-username>/branch-loan-api:latest
 
 ---
 
