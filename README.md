@@ -1,60 +1,218 @@
-# Flask Microloans API + Postgres (Docker)
+🚀 Branch Loan API – Dockerized Flask + Postgres + CI/CD (GHCR)
 
-Minimal REST API for microloans, built with Flask, SQLAlchemy, Alembic, and PostgreSQL (via Docker Compose).
+A fully containerized microservice for managing branch microloans.
+This solution includes:
 
-## Quick start
+Production-ready Dockerfile (multi-stage build, non-root user, Gunicorn)
 
-```bash
-# 1) Build and start services
-docker compose up -d --build
+Multi-environment Docker Compose (dev, staging, production)
 
-# 2) Run DB migrations
-docker compose exec api alembic upgrade head
+Secure environment variable management
 
-# 3) Seed dummy data (idempotent)
-docker compose exec api python scripts/seed.py
+CI/CD pipeline using GitHub Actions
 
-# 4) Hit endpoints
-curl http://localhost:8000/health
-curl http://localhost:8000/api/loans
-```
+Automated vulnerability scanning with Trivy
 
-## Configuration
+## Container publishing to GitHub Container Registry (GHCR)
 
-See `.env.example` for env vars. By default:
-- `DATABASE_URL=postgresql+psycopg2://postgres:postgres@db:5432/microloans`
-- API listens on `localhost:8000`.
+📌 Table of Contents
 
-## API
+Run Application Locally
 
-- GET `/health` → `{ "status": "ok" }`
-- GET `/api/loans` → list all loans
-- GET `/api/loans/:id` → get loan by id
-- POST `/api/loans` → create loan (status defaults to `pending`)
+Switch Between Environments
 
-Example create:
-```bash
-curl -X POST http://localhost:8000/api/loans \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "borrower_id": "usr_india_999",
-    "amount": 12000.50,
-    "currency": "INR",
-    "term_months": 6,
-    "interest_rate_apr": 24.0
-  }'
-```
+Environment Variables Explained
 
-- GET `/api/stats` → aggregate stats: totals, avg, grouped by status/currency.
+CI/CD Pipeline Explained
 
-## Development
+Architecture Diagram
 
-- App entrypoint: `wsgi.py` (`wsgi:app`)
-- Flask app factory: `app/__init__.py`
-- Models: `app/models.py`
-- Migrations: `alembic/`
+Design Decisions
 
-## Notes
+## Troubleshooting Guide
 
-- Amounts are validated server-side (0 < amount ≤ 50000).
-- No authentication for this prototype.
+🧪 Run the Application Locally (Dev Environment)
+1️⃣ Clone the repository
+git clone https://github.com/Vaibhav979/dummy-branch-app.git
+cd dummy-branch-app
+
+2️⃣ Create certificates (only needed for dev HTTPS)
+mkcert -install
+mkcert -key-file certs/key.pem -cert-file certs/cert.pem branch.local
+
+3️⃣ Start local development environment
+docker compose --env-file .env.dev up --build
+
+4️⃣ Verify the API is running
+
+Open in browser or Postman:
+
+https://branch.local/health
+
+Expected response:
+
+## { "status": "ok" }
+
+🏗 Switch Between Environments
+
+This project supports:
+
+Environment File Use Case
+Development .env.dev Local testing, debugging
+Staging .env.staging Pre-production testing
+Production .env.prod Real deployment, optimized
+
+Run staging
+docker compose --env-file .env.staging up --build
+
+Run production
+docker compose --env-file .env.prod up -d
+
+🔧 Environment Variables Explained
+Variable Description
+POSTGRES_USER Database username
+POSTGRES_PASSWORD Database password
+POSTGRES_DB Name of Postgres database
+DB_PORT Port exposed to host
+API_PORT Port Flask/Gunicorn exposes
+FLASK_ENV Mode: development / staging / production
+DATABASE_URL SQLAlchemy DSN for Postgres
+LOG_LEVEL Logging verbosity for app
+ENV_FILE Tells docker-compose which .env to load
+
+---
+
+🚀 CI/CD Pipeline Overview
+
+Every push to main triggers:
+
+1️⃣ Build
+
+Install dependencies
+
+Run tests
+
+Build Docker image using multi-stage Dockerfile
+
+2️⃣ Security Scan
+
+Trivy scans:
+
+filesystem
+
+Docker image
+
+Only report high/critical vulnerabilities without breaking pipeline
+
+3️⃣ Publish Image to GHCR
+
+Tags pushed automatically:
+
+ghcr.io/<username>/branch-loan-api:<commit-sha>
+ghcr.io/<username>/branch-loan-api:latest
+
+## Meaning the production deployment always gets the newest stable image.
+
+🖼 Architecture Diagram
+┌─────────────────────────┐
+│ Developer Machine │
+│ docker compose (env) │
+└─────────────┬───────────┘
+│
+▼
+┌──────────────────┐
+│ API (Flask) │
+│ Gunicorn + SSL │
+└──────────────────┘
+│
+SQLAlchemy
+│
+▼
+┌──────────────────┐
+│ Postgres DB │
+└──────────────────┘
+
+CI/CD Pipeline (GitHub Actions)
+├── Build → Test → Scan → Publish Image → GHCR
+└── Images deployed via docker-compose (.env)
+
+---
+
+🧠 Design Decisions
+1️⃣ Multi-stage Dockerfile
+
+Reduces image size
+
+Improves security
+
+Ensures production environment matches CI build
+
+Trade-off:
+More complex Dockerfile vs simpler single-stage image.
+
+2️⃣ Use of docker-compose for multi-environment
+
+Easy environment switching
+
+Clean separation of dev/staging/prod
+
+Centralized env variable handling
+
+3️⃣ HTTPS support in dev (mkcert)
+
+Simulates real-world production HTTPS
+
+Helps prepare backend for secure deployment
+
+Trade-off: Local certificates can confuse beginners.
+
+4️⃣ GitHub Actions for CI/CD
+
+Free, fast, integrated into GitHub
+
+## GHCR provides easy permission handling
+
+With more time, I would:
+
+Add integration tests
+
+Add auto-deploy to Kubernetes or Docker Swarm
+
+Implement rollback strategy
+
+## Add log aggregation with ELK/Grafana
+
+🛠 Troubleshooting
+❌ API not reachable
+
+Check containers:
+
+docker ps
+
+Logs:
+
+docker logs branch_api
+
+❌ Database connection errors
+docker logs branch_db
+
+Common fix: Increase healthcheck timeout.
+
+❌ SSL errors
+
+If running dev mode, recreate certificates:
+
+mkcert -install
+mkcert -key-file certs/key.pem -cert-file certs/cert.pem branch.local
+
+❌ CI/CD failing at pushing image
+
+Make sure repo permissions allow package publishing:
+
+Settings → Actions → Workflow permissions → Read & write
+
+❌ PR pipeline works but main pipeline doesn’t
+
+Check condition in workflow:
+
+if: github.ref == 'refs/heads/main'
