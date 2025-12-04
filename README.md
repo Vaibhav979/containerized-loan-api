@@ -137,14 +137,13 @@ Meaning the production deployment always gets the newest stable image.
 ┌──────────────────────────────────────────────────────────┐
 │ GitHub Actions │
 ├──────────────────────────────────────────────────────────┤
-│ 1️⃣ Checkout code │
-│ 2️⃣ Set up Python (3.11) │
-│ 3️⃣ Install dependencies │
-│ 4️⃣ Run tests (pytest) │
-│ 5️⃣ Build Docker image │
-│ 6️⃣ Security scan (Trivy) │
-│ 7️⃣ Push verified image → GHCR (only on main branch) │
-└──────────────────────────────────────────────────────────┘
+1️⃣ Checkout code
+2️⃣ Set up Python (3.11)
+3️⃣ Install dependencies
+4️⃣ Run tests (pytest)
+5️⃣ Build Docker image
+6️⃣ Security scan (Trivy)
+7️⃣ Push verified image → GHCR (only on main branch)
 
 Deployment:
 
