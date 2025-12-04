@@ -1,4 +1,4 @@
-🚀 Branch Loan API – Dockerized Flask + Postgres + CI/CD (GHCR)
+## 🚀 Branch Loan API – Dockerized Flask + Postgres + CI/CD (GHCR)
 
 A fully containerized microservice for managing branch microloans.
 This solution includes:
@@ -13,9 +13,9 @@ CI/CD pipeline using GitHub Actions
 
 Automated vulnerability scanning with Trivy
 
-## Container publishing to GitHub Container Registry (GHCR)
+Container publishing to GitHub Container Registry (GHCR)
 
-📌 Table of Contents
+## 📌 Table of Contents
 
 Run Application Locally
 
@@ -29,9 +29,10 @@ Architecture Diagram
 
 Design Decisions
 
-## Troubleshooting Guide
+Troubleshooting Guide
 
-🧪 Run the Application Locally (Dev Environment)
+## 🧪 Run the Application Locally (Dev Environment)
+
 1️⃣ Clone the repository
 git clone https://github.com/Vaibhav979/dummy-branch-app.git
 cd dummy-branch-app
@@ -51,9 +52,9 @@ https://branch.local/health
 
 Expected response:
 
-## { "status": "ok" }
+{ "status": "ok" }
 
-🏗 Switch Between Environments
+## 🏗 Switch Between Environments
 
 This project supports:
 
@@ -68,21 +69,21 @@ docker compose --env-file .env.staging up --build
 Run production
 docker compose --env-file .env.prod up -d
 
-🔧 Environment Variables Explained
-Variable Description
-POSTGRES_USER Database username
-POSTGRES_PASSWORD Database password
-POSTGRES_DB Name of Postgres database
-DB_PORT Port exposed to host
-API_PORT Port Flask/Gunicorn exposes
-FLASK_ENV Mode: development / staging / production
-DATABASE_URL SQLAlchemy DSN for Postgres
-LOG_LEVEL Logging verbosity for app
-ENV_FILE Tells docker-compose which .env to load
+### 🔧 Environment Variables Explained
 
----
+| Variable          | Description                                              |
+| ----------------- | -------------------------------------------------------- |
+| POSTGRES_USER     | Username for the PostgreSQL database                     |
+| POSTGRES_PASSWORD | Password for the PostgreSQL database                     |
+| POSTGRES_DB       | Name of the database                                     |
+| DB_PORT           | Port exposed by Postgres to the host                     |
+| API_PORT          | Port the Flask/Gunicorn API listens on                   |
+| FLASK_ENV         | Application mode: `development`, `staging`, `production` |
+| DATABASE_URL      | SQLAlchemy DSN for connecting to Postgres                |
+| LOG_LEVEL         | Logging verbosity (`debug`, `info`, `warning`, etc.)     |
+| ENV_FILE          | Tells docker-compose which `.env` file to load           |
 
-🚀 CI/CD Pipeline Overview
+## 🚀 CI/CD Pipeline Overview
 
 Every push to main triggers:
 
@@ -111,34 +112,48 @@ Tags pushed automatically:
 ghcr.io/<username>/branch-loan-api:<commit-sha>
 ghcr.io/<username>/branch-loan-api:latest
 
-## Meaning the production deployment always gets the newest stable image.
+Meaning the production deployment always gets the newest stable image.
 
-🖼 Architecture Diagram
-┌─────────────────────────┐
-│ Developer Machine │
-│ docker compose (env) │
-└─────────────┬───────────┘
-│
-▼
-┌──────────────────┐
-│ API (Flask) │
-│ Gunicorn + SSL │
-└──────────────────┘
-│
-SQLAlchemy
-│
-▼
-┌──────────────────┐
-│ Postgres DB │
-└──────────────────┘
+### 🖼 Architecture Diagram
 
-CI/CD Pipeline (GitHub Actions)
-├── Build → Test → Scan → Publish Image → GHCR
-└── Images deployed via docker-compose (.env)
+                     ┌───────────────────────────┐
+                     │     Developer Machine      │
+                     │  Runs Docker Compose (env) │
+                     └───────────────┬────────────┘
+                                     │
+                                     ▼
+                        ┌─────────────────────────┐
+                        │      API Container      │
+                        │  Flask + Gunicorn + SSL │
+                        └──────────────┬──────────┘
+                                      │ SQLAlchemy
+                                      ▼
+                        ┌─────────────────────────┐
+                        │     Postgres Database   │
+                        └─────────────────────────┘
+
+### 🚀 CI/CD Pipeline (GitHub Actions)
+
+┌────────────────────────────────────────────────────────────┐
+│ GitHub Actions │
+├────────────────────────────────────────────────────────────┤
+│ 1️⃣ Checkout code │
+│ 2️⃣ Setup Python │
+│ 3️⃣ Install dependencies │
+│ 4️⃣ Run tests (pytest) │
+│ 5️⃣ Build Docker image │
+│ 6️⃣ Security Scan (Trivy) │
+│ 7️⃣ Push verified image → GHCR (main branch only) │
+└────────────────────────────────────────────────────────────┘
+
+Deployment:
+
+Local environments pull images from GHCR using:
 
 ---
 
-🧠 Design Decisions
+## 🧠 Design Decisions
+
 1️⃣ Multi-stage Dockerfile
 
 Reduces image size
@@ -170,7 +185,7 @@ Trade-off: Local certificates can confuse beginners.
 
 Free, fast, integrated into GitHub
 
-## GHCR provides easy permission handling
+GHCR provides easy permission handling
 
 With more time, I would:
 
@@ -180,9 +195,10 @@ Add auto-deploy to Kubernetes or Docker Swarm
 
 Implement rollback strategy
 
-## Add log aggregation with ELK/Grafana
+Add log aggregation with ELK/Grafana
 
-🛠 Troubleshooting
+## 🛠 Troubleshooting
+
 ❌ API not reachable
 
 Check containers:
