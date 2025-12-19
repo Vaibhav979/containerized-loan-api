@@ -34,7 +34,7 @@ jobs:
       - name: Set Docker image name (lowercase)
         run: |
           OWNER_LC="${GITHUB_REPOSITORY_OWNER,,}"
-          echo "IMAGE_NAME=ghcr.io/$OWNER_LC/branch-loan-api" >> $GITHUB_ENV
+          echo "IMAGE_NAME=ghcr.io/$OWNER_LC/loan-api" >> $GITHUB_ENV
 
       # Build Docker Image
       - name: Build Docker Image
