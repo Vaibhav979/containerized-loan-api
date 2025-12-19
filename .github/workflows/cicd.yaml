@@ -65,7 +65,7 @@ jobs:
       - name: Set Docker image name (lowercase)
         run: |
           OWNER_LC="${GITHUB_REPOSITORY_OWNER,,}"
-          echo "IMAGE_NAME=ghcr.io/$OWNER_LC/dummy-branch-app" >> $GITHUB_ENV
+          echo "IMAGE_NAME=ghcr.io/$OWNER_LC/loan-app" >> $GITHUB_ENV
 
       # Login to GHCR
       - name: Log in to GHCR
