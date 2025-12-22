@@ -1,0 +1,7 @@
+certs/
+.git
+.gitignore
+.env
+__pycache__/
+*.pem
+*.key
