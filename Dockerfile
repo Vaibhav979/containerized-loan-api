@@ -18,17 +18,16 @@ RUN pip install --prefix=/install --no-cache-dir -r requirements.txt
 # Stage - Runtime Image
 FROM python:3.11-slim
 
-# creating a non-root user
 RUN useradd -m appuser
-# switching to the non-root user
-USER appuser
 
 WORKDIR /app
 
 #copying installed dependencies from the builder stage
 COPY --from=builder /install /usr/local
 
-COPY . .
+COPY app/ /app/
+
+USER appuser
 
 EXPOSE 443
 
