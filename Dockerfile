@@ -18,14 +18,17 @@ RUN pip install --prefix=/install --no-cache-dir -r requirements.txt
 # Stage - Runtime Image
 FROM python:3.11-slim
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq5 \
+    curl \
+  && rm -rf /var/lib/apt/lists/*  
+
 RUN useradd -m appuser
 
 WORKDIR /app
 
-#copying installed dependencies from the builder stage
 COPY --from=builder /install /usr/local
-
-COPY app/ /app/
+COPY --chow=appuser:appuser app/ /app/
 
 USER appuser
 
