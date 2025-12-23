@@ -28,7 +28,7 @@ RUN useradd -m appuser
 WORKDIR /app
 
 COPY --from=builder /install /usr/local
-COPY --chow=appuser:appuser app/ /app/
+COPY --chown=appuser:appuser app/ /app/
 
 USER appuser
 
