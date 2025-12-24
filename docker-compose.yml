@@ -21,8 +21,11 @@ services:
 
     restart: unless-stopped
 
+    networks:
+      - backend
+
   api:
-    image: ghcr.io/vaibhav979/loan-app:latest
+    image: ghcr.io/vaibhav979/loan-api:latest
     container_name: branch_api
 
     env_file:
@@ -33,17 +36,20 @@ services:
         condition: service_healthy
 
     ports:
-      - "80:${API_PORT}"
-
-    # volumes:
-    #   - ./certs:/app/certs:ro
+      - "8000:8000"
 
     command: >
       gunicorn -w 4
-      -b 0.0.0.0:${API_PORT}
+      -b 0.0.0.0:8000
       wsgi:app
 
     restart: unless-stopped
 
+    networks:
+      - backend
+
 volumes:
   db_data:
+
+networks:
+  backend:
